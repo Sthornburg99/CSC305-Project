@@ -7,14 +7,12 @@ block content
     legend Please enter your ID below and select your role.
     form(method="post", action="/")
     label(for="ID") ID:
-    input#ID(type="text" name="id")
-    input(type="submit", value="Submit" onclick="getID()")
+    input#ID(type="text" name="id" required)
     br
-    a:href student.pug
-    button Student 
-    a:href faculty.pug 
-    button Faculty 
-    a:href registrar.pug
-    button Registrar
-
-should be a role select drop down menu
+    select#role(name="role" required)
+        option(value="") &mdash;Please select a role&mdash;
+        option Student
+        option Faculty
+        Option Registrar
+    br
+    input(type="submit", value="Submit" onclick="getID()")
