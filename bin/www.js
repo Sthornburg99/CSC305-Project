@@ -1,0 +1,133 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var path = require('path');
+var debug = require('debug')('project:server');
+var http = require('http');
+
+/**
+ * Database
+ */
+
+const dbconnect = require('../public/javascript/dbconnect.js');
+let dbname = path.resolve(__dirname, '..', 'public', 'univdb.sqli');
+console.log(dbname);
+app.locals.db = dbconnect.dbopen(dbname);
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '8080');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+/**
+ * Function for graceful (as much as possible!) shutdown.
+ */
+function gracefulShutdown(signal) {
+  if (signal) {
+      console.log(`Received ${signal}, shutting down (somewhat) gracefully.`);
+  }
+  else {
+      console.log('Shutting down, no signal.');
+  }
+
+  server.close(() => {
+      console.log('Http server closed.');
+      if (app.locals.db) {
+          dbconnect.dbclose(app.locals.db, () => { 
+              console.log('Exiting after closing database.');
+              process.exit(0); 
+          });
+      }
+      else {
+          console.log('Exiting, no database to close.')
+          process.exit(0);
+      }
+  });
+}
+
+/**
+* Attach gracefulShutdown() to the two most common ways of shutting down.
+*/
+process.on('SIGTERM', gracefulShutdown);
+
+process.on('SIGINT', gracefulShutdown);
