@@ -7,7 +7,7 @@ block content
     legend Please enter your ID below and select your role.
     form(method="post", action="/")
     label(for="ID") ID:
-    input(type="text" name="id")
+    input#ID(type="text" name="id")
     input(type="submit", value="Submit" onclick="getID()")
     br
     a:href student.pug
