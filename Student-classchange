@@ -1,4 +1,0 @@
-extends layout
-body
-h2 Add or Drop Courses
-//- somehow change the db
