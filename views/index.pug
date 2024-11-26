@@ -1,5 +1,10 @@
 extends layout.pug 
-
+<script>
+function(changePage){
+     
+       
+}
+</script>
 block content
     h1= title
     p Welcome to #{title}!
@@ -11,8 +16,8 @@ block content
     br
     select#role(name="role" required)
         option(value="") &mdash;Please select a role&mdash;
-        option Student
-        option Faculty
-        Option Registrar
+        option(value="student.pug") Student
+        option(value="faculty.pug") Faculty
+        option(value="registrar.pug") Registrar
     br
-    input(type="submit", value="Submit" onclick="getID()")
+    input(type="submit", value="Submit")
