@@ -1,23 +1,25 @@
 extends layout.pug 
-<script>
-function(changePage){
-     
-       
-}
-</script>
 block content
-    h1= title
-    p Welcome to #{title}!
-
+    h1=title
     legend Please enter your ID below and select your role.
-    form(method="post", action="/")
+    form(method="POST", action="/")
     label(for="ID") ID:
     input#ID(type="text" name="id" required)
     br
     select#role(name="role" required)
         option(value="") &mdash;Please select a role&mdash;
-        option(value="student.pug") Student
-        option(value="faculty.pug") Faculty
-        option(value="registrar.pug") Registrar
-    br
-    input(type="submit", value="Submit")
+        option(value="student") Student
+        option(value="faculty") Faculty
+        option(value="registrar") Registrar
+    input(type="submit", value="Submit" onclick='changePage()')
+
+    script.
+        function changePage(){
+            const role = document.getElementById('role').value;
+            if (role === 'student'){
+                window.location = './views/student.pug';}
+            if (role === 'faculty'){
+                window.location = './views/faculty.pug';}
+            if (role === 'registrar'){
+                window.location = './views/registrar.pug';}
+        }
