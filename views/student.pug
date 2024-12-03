@@ -1,5 +1,13 @@
 extends layout.pug
-
-
-
-h3 Add or Drop a Course
+block content
+    h2 #{role}: #{userID}
+    if courses === 0
+        p This student is enrolled in 0 courses 
+    else if courses > 0
+        table 
+            th
+                tr 
+                    'Course Number'
+                    'Course Description'
+                    'Course Credit Hours'
+                tr 
