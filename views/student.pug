@@ -1,13 +1,21 @@
 extends layout.pug
 block content
     h2 #{role}: #{userID}
-    if courses === 0
+    p Form data: #{JSON.stringify(formdata)}
+    if enrolledCourses.length === 0
         p This student is enrolled in 0 courses 
-    else if courses > 0
+    else if enrolledCourses.length > 0
         table 
-            th
+            thead
                 tr 
-                    'Course Number'
-                    'Course Description'
-                    'Course Credit Hours'
-                tr 
+                    th 'Course Number'
+                    th 'Term'
+                    th 'Year'
+                    th(colspan=2) "Instructor"
+                    th Grade
+            tbody
+                each course in enrolledCourses
+                    tr
+                        each value in Object.values(course)
+                            td= value
+
