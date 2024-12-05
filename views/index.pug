@@ -3,23 +3,12 @@ block content
     h1=title
     legend Please enter your ID below and select your role.
     form(method="POST", action="/")
-    label(for="ID") ID:
-    input#ID(type="text" name="id" required)
-    br
-    select#role(name="role" required)
-        option(value="") &mdash;Please select a role&mdash;
-        option(value="student") Student
-        option(value="faculty") Faculty
-        option(value="registrar") Registrar
-    input(type="submit", value="Submit" onclick='changePage()')
-
-    script.
-        function changePage(){
-            const role = document.getElementById('role').value;
-            if (role === 'student'){
-                window.location = './views/student.pug';}
-            if (role === 'faculty'){
-                window.location = './views/faculty.pug';}
-            if (role === 'registrar'){
-                window.location = './views/registrar.pug';}
-        }
+        label(for="ID") ID:
+        input#ID(type="text" name="id" required)
+        br
+        select#role(name="role", required, onchange="choosePage(this)")
+            option(value="") &mdash;Please select a role&mdash;
+            option(value="student") Student
+            option(value="faculty") Faculty
+            option(value="registrar") Registrar
+        input(type="submit", value="Submit")
