@@ -10,72 +10,33 @@ router.get('/', function(req, res, next) {
 });
 
 
-
-
-/*router.post('/student', function(req, res, next) {
-  // Do appropriate tweaking here before calling res.render
-  console.log(req.body);
-
-  currentQuery = 'select CourseNo, OffTerm, OffYear, FacFirstName, FacLastName, EnrGrade '
-                + 'from (Enrollment natural join Offering) '
-                + 'left join Faculty on Offering.FacSSN = Faculty.FacSSN '
-                + 'where OffTerm = "FALL" and OffYear = "2024"'
-  console.log(currentQuery);
-  req.app.locals.db.all(currentQuery, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    req.app.locals.enrolledCourses = rows;
-
-    // Do the other query here, and call res.render from its handler
-    availableQuery = 'select CourseNo, FacFirstName, FacLastName, OffLocation, OffTime, OffDays '
-                    + 'from Offering ' 
-                    + 'left join Faculty on Offering.FacSSN = Faculty.FacSSN '
-                    + 'where OffTerm = "WINTER"'
-    console.log(availableQuery);
-    req.app.locals.db.all(availableQuery, [], (err, rows) => {
-      if (err) {
-        throw err;
-      }
-      req.app.locals.availableCourses = rows;
-      let addQuery = 'select OfferNo, CourseNo, FacFirstName, FacLastName, OffLocation, OffTime, OffDays '
-                      + 'from Offering '
-                      + 'left join Faculty on Offering.FacSSN = Faculty.FacSSN '
-                      + 'where OffTerm = "WINTER" and OffYear ="2025"'
-    req.app.locals.db.all(addQuery, [], (err, rows) => {
-      if (err){
-        throw err;
-      }
-      req.app.locals.addingCourses=rows;
-     })
-    // Until the other query is implemented, call res.render here
-    res.render('student', { role: req.body.role,
-                            userID: req.body.id,
-                            formdata: req.body,
-                            enrolledCourses: req.app.locals.enrolledCourses,
-                            availableCourses: req.app.locals.availableCourses
-                            //addingCourses: req.app.locals.addingCourses
-    });
-  });
-});
-}); 
-*/
 router.post('/student', function(req, res, next) {
-  console.log("Request body:", req.body);  // Debug log
+  console.log("Request body:", req.body);
 
-  // Handle enrollment if Add was clicked
+  // Handle Add/Drop based on which submit button was clicked
   if (req.body.EnrollmentStatus === 'on') {
-    const enrollQuery = 'INSERT INTO Enrollment (StdSSN, OfferNo) VALUES (?, ?)';
-    req.app.locals.db.run(enrollQuery, [req.body.id, req.body.courseOfferNo], function(err) {
-      if (err) {
-        console.error("Enrollment error:", err);
-      } else {
-        console.log("Enrollment successful");
-      }
-    });
+    if (req.body.value === 'Add') {
+      const enrollQuery = 'INSERT INTO Enrollment (StdSSN, OfferNo) VALUES (?, ?)';
+      req.app.locals.db.run(enrollQuery, [req.body.id, req.body.courseOfferNo], function(err) {
+        if (err) {
+          console.error("Add error:", err);
+        } else {
+          console.log("Added course:", req.body.courseOfferNo);
+        }
+      });
+    } else if (req.body.value === 'Drop') {
+      const dropQuery = 'DELETE FROM Enrollment WHERE StdSSN = ? AND OfferNo = ?';
+      req.app.locals.db.run(dropQuery, [req.body.id, req.body.courseOfferNo], function(err) {
+        if (err) {
+          console.error("Drop error:", err);
+        } else {
+          console.log("Dropped course:", req.body.courseOfferNo);
+        }
+      });
+    }
   }
 
-  // Get enrolled courses (separate query to see results immediately)
+  // Get enrolled courses
   let getEnrolledQuery = `
     SELECT CourseNo, OffTerm, OffYear, FacFirstName, FacLastName, EnrGrade
     FROM Enrollment 
@@ -86,11 +47,12 @@ router.post('/student', function(req, res, next) {
   req.app.locals.db.all(getEnrolledQuery, [req.body.id], (err, enrolledRows) => {
     if (err) throw err;
     
-    // Get available courses
+    // Get available courses (including those without professors)
     let availableQuery = `
       SELECT OfferNo, CourseNo, FacFirstName, FacLastName, OffLocation, OffTime, OffDays
       FROM Offering 
-      LEFT JOIN Faculty ON Offering.FacSSN = Faculty.FacSSN`;
+      LEFT JOIN Faculty ON Offering.FacSSN = Faculty.FacSSN
+      WHERE OffTerm = "WINTER"`;
     
     req.app.locals.db.all(availableQuery, [], (err, availableRows) => {
       if (err) throw err;
@@ -105,28 +67,6 @@ router.post('/student', function(req, res, next) {
     });
   });
 });
-/*router.post('/enrolled', function(req, res, next) {
-  if (req.app.locals.formdata) {
-    let addQuery = 'select OfferNo, CourseNo, FacFirstName, FacLastName, OffLocation, OffTime, OffDays '
-                  + 'from Offering '
-                  + 'left join Faculty on Offering.FacSSN = Faculty.FacSSN '
-                  + 'where OffTerm = "WINTER" and OffYear ="2025"'
-    req.app.locals.db.all(addQuery, [], (err, rows) => {
-      if (err){
-        throw err;
-      }
-      req.app.locals.addingCourses=rows;
-    })
-
-  res.render('student', { role: req.body.role,
-    userID: req.body.id,
-    formdata: req.body,
-    enrolledCourses: req.app.locals.enrolledCourses,
-    availableCourses: req.app.locals.availableCourses,
-    addingCourses: req.app.locals.addingCourses
-  });
-  };
-});*/
 
 router.post('/faculty', function(req, res, next) {
   console.log(req.body);
