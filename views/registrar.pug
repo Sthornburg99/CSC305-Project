@@ -1,10 +1,126 @@
 extends layout.pug
 block content 
-    if courses 
+    h2 #{role}
+    if openCourses.length === 0
+        p There are no available courses.
+    else if openCourses.length > 0
         table 
-            th
+            thead
                 tr 
-                    'Course Number'
-                    'Course Description'
-                    'Course Credit Hours'
+                    th Offering Number
+                    th Course Number
+                    th(colspan=2) Instructor
+                    th Location 
+                    th Time 
+                    th Days
+            tbody   
+                each course in openCourses
+                    tr 
+                        each value in Object.values(course) 
+                            td= value
+    br
+    br
+    if !changeCourses
+        p There are no courses available for editing.
+    else if changeCourses.length > 0
+        table 
+            caption Available courses for editing 
+            thead 
                 tr 
+                    th(colspan=2) Instructor 
+                    th Location 
+                    th Time
+                    th Days
+            tbody 
+                each row in changeCourses 
+                    tr 
+                        form(id=`edit-${row.FacFirstName}`,method="post",action="/editCourses")
+                        td
+                            input(type="text", name="FacFirstName", value=`${row.FacFirstName}`,
+                                required, size="10", form=`edit-${row.FacFirstName}`)
+                            span.flag 
+                        td
+                            input(type="text", name="FacLastName", value=`${row.FacLastName}`,
+                                required, size="8", form=`edit-${row.FacFirstName}`)
+                            span.flag 
+                        td 
+                            select(name="OffLocation", required, form=`edit-${row.OffLocation}`)
+                                option(value="") &mdash;Location&mdash;
+                                each rows in changeCourses
+                                    if rows.OffLocation == location
+                                        option(selected)  #{location}
+                                    else
+                                        option #{location}
+                            span.flag 
+                        td
+                            input(type="text", name="OffTime", value=`${row.OffTime}`,
+                                    required, size="6", form=`edit-${row.FacFirstName}`)
+                            span.flag 
+                        td 
+                            input(type="text", name="OffDays", value=`${row.OffDays}`,
+                                    required, size="5", form=`edit-${row.FacFirstName}`)
+                    tr 
+                        td
+                            input(type="submit",value="Insert",form=`edit-${row.FacFirstName}`)
+    if changeCourses.length > 0
+        table 
+            caption Add a new course.
+            thead
+                tr 
+                    th Course Number 
+                    th Course Title 
+                    th Credit Hours 
+                    th Offering Number 
+                    th(colspan=2) Instructor 
+                    th Location 
+                    th Time 
+                    th Days
+            tbody
+                tr 
+                    form(id="newcourse",method="post",action="/addCourse")
+                        input(type="hidden", name="operation", value="insert")
+                    td 
+                        input(type="text", name="CrsNo", required, form="newcourse", 
+                            style="width: 6em")
+                        span.flag
+                    td
+                        input(type="text", name="CrsDesc", required, form="newcourse",
+                            style="width: 20em")
+                        span.flag 
+                    td 
+                        input(type="text", name="CrsUnits", required, form="newcourse",
+                            style="width: 7em")
+                        span.flag 
+                    td 
+                        input(type="text", name="OfferNo", required, form="newcourse",
+                            size="4")
+                        span.flag 
+                    td 
+                        input(type="text", name="FacFastName", required, form="newcourse",
+                            size="10")
+                        span.flag 
+                    td 
+                        input(type="text", name="FacLastName", required, form="newcourse",
+                            size="8")
+                        span.flag 
+                    td
+                        select(name="OffLocation", required, form="newcourse",
+                                style="width: 3.5em")
+                            option(value="") &mdash;Location&mdash;
+                            each OffLocation in changeCourses
+                                if changeCourses.OffLocation == OffLocation 
+                                    option(selected) #{OffLocation}
+                                else 
+                                    option #{OffLocation}
+                        span.flag 
+                    td 
+                        input(type="text", name="OffTime", required, form="newcourse",
+                            size="6")
+                        span.flag 
+                    td
+                        input(type="text", name="OffDays", required, form="newcourse",
+                            size="5")
+                        span.flag
+                    td
+                    td
+                        input(type="submit", value="Insert", form="newcourse")

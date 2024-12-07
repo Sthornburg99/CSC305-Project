@@ -15,3 +15,26 @@ block content
                     tr 
                         each value in Object.values(course) 
                             td= value
+        br
+        br
+        br
+        table 
+            thead
+                tr
+                    th(colspan=2) Student 
+                    th Student ID 
+                    th Grade 
+                    th Edit Grade
+            tbody
+                each student in currentStudent
+                    tr
+                        each value in Object.values(student)
+                            td= value
+                        form(id="editgrade",method="post",action="/")
+                        td 
+                            input(type="text",name="EnrGrade",form="editgrade",
+                                style="width: 6em")
+                            span.flag
+                        td
+                        td 
+                            input(type="submit",value="Insert",form="editgrade")

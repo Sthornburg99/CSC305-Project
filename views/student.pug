@@ -20,17 +20,30 @@ block content
                             td= value
         br
         br
-        table 
+    if availableCourses.length=== 0
+        p No Available Courses
+    else if availableCourses.length > 0
+        table(id="addition") 
             thead
                 tr
                     th Course number 
-                    th Instructor 
+                    th(colspan=2) Instructor
                     th Location 
                     th Time Offered 
                     th Days offered 
                     th Enrolled 
             tbody 
-                each course in enrolledCourses 
+                each course in availableCourses 
                     tr 
                         each value in Object.values(course)
-                            td=value 
+                            td= value
+                        form(id="enrolled",method="post",action="/enrolled")
+                        td 
+                            input(type="checkbox",name="Enrollment Status",form="enrolled")
+                            span.flag
+                        td
+                        td 
+                            input(type="submit",value="Add",form="enrolled")
+                        td 
+                            input(type="submit",value="Drop",form="enrolled")
+                        
