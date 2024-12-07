@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 
 
 
-router.post('/student', function(req, res, next) {
+/*router.post('/student', function(req, res, next) {
   // Do appropriate tweaking here before calling res.render
   console.log(req.body);
 
@@ -38,7 +38,7 @@ router.post('/student', function(req, res, next) {
         throw err;
       }
       req.app.locals.availableCourses = rows;
-      /*let addQuery = 'select OfferNo, CourseNo, FacFirstName, FacLastName, OffLocation, OffTime, OffDays '
+      let addQuery = 'select OfferNo, CourseNo, FacFirstName, FacLastName, OffLocation, OffTime, OffDays '
                       + 'from Offering '
                       + 'left join Faculty on Offering.FacSSN = Faculty.FacSSN '
                       + 'where OffTerm = "WINTER" and OffYear ="2025"'
@@ -47,7 +47,7 @@ router.post('/student', function(req, res, next) {
         throw err;
       }
       req.app.locals.addingCourses=rows;
-     })*/
+     })
     // Until the other query is implemented, call res.render here
     res.render('student', { role: req.body.role,
                             userID: req.body.id,
@@ -58,9 +58,54 @@ router.post('/student', function(req, res, next) {
     });
   });
 });
-});
+}); 
+*/
+router.post('/student', function(req, res, next) {
+  console.log("Request body:", req.body);  // Debug log
 
-router.post('/enrolled', function(req, res, next) {
+  // Handle enrollment if Add was clicked
+  if (req.body.EnrollmentStatus === 'on') {
+    const enrollQuery = 'INSERT INTO Enrollment (StdSSN, OfferNo) VALUES (?, ?)';
+    req.app.locals.db.run(enrollQuery, [req.body.id, req.body.courseOfferNo], function(err) {
+      if (err) {
+        console.error("Enrollment error:", err);
+      } else {
+        console.log("Enrollment successful");
+      }
+    });
+  }
+
+  // Get enrolled courses (separate query to see results immediately)
+  let getEnrolledQuery = `
+    SELECT CourseNo, OffTerm, OffYear, FacFirstName, FacLastName, EnrGrade
+    FROM Enrollment 
+    JOIN Offering ON Enrollment.OfferNo = Offering.OfferNo
+    LEFT JOIN Faculty ON Offering.FacSSN = Faculty.FacSSN 
+    WHERE StdSSN = ?`;
+
+  req.app.locals.db.all(getEnrolledQuery, [req.body.id], (err, enrolledRows) => {
+    if (err) throw err;
+    
+    // Get available courses
+    let availableQuery = `
+      SELECT OfferNo, CourseNo, FacFirstName, FacLastName, OffLocation, OffTime, OffDays
+      FROM Offering 
+      LEFT JOIN Faculty ON Offering.FacSSN = Faculty.FacSSN`;
+    
+    req.app.locals.db.all(availableQuery, [], (err, availableRows) => {
+      if (err) throw err;
+      
+      res.render('student', { 
+        role: req.body.role,
+        userID: req.body.id,
+        formdata: req.body,
+        enrolledCourses: enrolledRows,
+        availableCourses: availableRows
+      });
+    });
+  });
+});
+/*router.post('/enrolled', function(req, res, next) {
   if (req.app.locals.formdata) {
     let addQuery = 'select OfferNo, CourseNo, FacFirstName, FacLastName, OffLocation, OffTime, OffDays '
                   + 'from Offering '
@@ -81,7 +126,7 @@ router.post('/enrolled', function(req, res, next) {
     addingCourses: req.app.locals.addingCourses
   });
   };
-});
+});*/
 
 router.post('/faculty', function(req, res, next) {
   console.log(req.body);

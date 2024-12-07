@@ -37,13 +37,16 @@ block content
                     tr 
                         each value in Object.values(course)
                             td= value
-                        form(id="enrolled",method="post",action="/enrolled")
-                        td 
-                            input(type="checkbox",name="Enrollment Status",form="enrolled")
-                            span.flag
-                        td
-                        td 
-                            input(type="submit",value="Add",form="enrolled")
-                        td 
-                            input(type="submit",value="Drop",form="enrolled")
-                        
+                        form(id="enrolled",method="post",action="/student")
+                            input(type="hidden" name="role" value=role)
+                            input(type="hidden" name="id" value=userID)
+                            input(type="hidden" name="courseOfferNo" value=course.OfferNo)
+                            td 
+                                input(type="checkbox",name="EnrollmentStatus")
+                                span.flag
+                            td
+                            td 
+                                input(type="submit",value="Add")
+                            td 
+                                input(type="submit",value="Drop")
+                                                
