@@ -22,19 +22,32 @@ block content
             thead
                 tr
                     th(colspan=2) Student 
-                    th Student ID 
-                    th Grade 
+                    th Student ID
+                    th Course
+                    th Current Grade 
                     th Edit Grade
             tbody
                 each student in currentStudent
                     tr
-                        each value in Object.values(student)
-                            td= value
-                        form(id="editgrade",method="post",action="/")
-                        td 
-                            input(type="text",name="EnrGrade",form="editgrade",
-                                style="width: 6em")
-                            span.flag
-                        td
-                        td 
-                            input(type="submit",value="Insert",form="editgrade")
+                        td= student.StdFirstName
+                        td= student.StdLastName
+                        td= student.StdSSN
+                        td= student.CourseNo
+                        td= student.EnrGrade
+                        form(id=`editgrade-${student.StdSSN}-${student.OfferNo}`, 
+                             method="post",
+                             action="/editgrade")
+                            input(type="hidden" name="role" value=role)
+                            input(type="hidden" name="id" value=userID)
+                            input(type="hidden" name="StdSSN" value=student.StdSSN)
+                            input(type="hidden" name="OfferNo" value=student.OfferNo)
+                            td 
+                                input(type="text",
+                                     name="EnrGrade",
+                                     form=`editgrade-${student.StdSSN}-${student.OfferNo}`,
+                                     style="width: 6em")
+                                span.flag
+                            td
+                                input(type="submit",
+                                     value="Insert",
+                                     form=`editgrade-${student.StdSSN}-${student.OfferNo}`)

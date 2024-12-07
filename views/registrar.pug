@@ -44,14 +44,14 @@ block content
                                 required, size="8", form=`edit-${row.FacFirstName}`)
                             span.flag 
                         td 
-                            select(name="OffLocation", required, form=`edit-${row.OffLocation}`)
+                            select(name="OffLocation", required, form=`edit-${row.FacFirstName}`)
                                 option(value="") &mdash;Location&mdash;
-                                each rows in changeCourses
-                                    if rows.OffLocation == location
-                                        option(selected)  #{location}
+                                each location in locations
+                                    if location === row.OffLocation
+                                        option(selected)= location
                                     else
-                                        option #{location}
-                            span.flag 
+                                        option= location
+                                span.flag
                         td
                             input(type="text", name="OffTime", value=`${row.OffTime}`,
                                     required, size="6", form=`edit-${row.FacFirstName}`)
@@ -80,7 +80,7 @@ block content
                     form(id="newcourse",method="post",action="/addCourse")
                         input(type="hidden", name="operation", value="insert")
                     td 
-                        input(type="text", name="CrsNo", required, form="newcourse", 
+                        input(type="text", name="CourseNo", required, form="newcourse", 
                             style="width: 6em")
                         span.flag
                     td
@@ -96,23 +96,18 @@ block content
                             size="4")
                         span.flag 
                     td 
-                        input(type="text", name="FacFastName", required, form="newcourse",
+                        input(type="text", name="FacFirstName", required, form="newcourse",
                             size="10")
-                        span.flag 
+                        span.flag
                     td 
                         input(type="text", name="FacLastName", required, form="newcourse",
                             size="8")
-                        span.flag 
+                        span.flag
                     td
-                        select(name="OffLocation", required, form="newcourse",
-                                style="width: 3.5em")
+                        select(name="OffLocation", required, form="newcourse", style="width: 3.5em")
                             option(value="") &mdash;Location&mdash;
-                            each OffLocation in changeCourses
-                                if changeCourses.OffLocation == OffLocation 
-                                    option(selected) #{OffLocation}
-                                else 
-                                    option #{OffLocation}
-                        span.flag 
+                            each location in locations
+                                option= location
                     td 
                         input(type="text", name="OffTime", required, form="newcourse",
                             size="6")
@@ -121,6 +116,5 @@ block content
                         input(type="text", name="OffDays", required, form="newcourse",
                             size="5")
                         span.flag
-                    td
                     td
                         input(type="submit", value="Insert", form="newcourse")
