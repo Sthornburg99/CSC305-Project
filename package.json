@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/Sthornburg99/CSC305-project#readme",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "express": "^4.21.1",
+    "morgan": "^1.10.0",
     "pug": "^3.0.3",
     "sqlite3": "^5.1.7"
   }

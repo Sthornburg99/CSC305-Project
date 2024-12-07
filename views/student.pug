@@ -8,14 +8,29 @@ block content
         table 
             thead
                 tr 
-                    th 'Course Number'
-                    th 'Term'
-                    th 'Year'
-                    th(colspan=2) "Instructor"
+                    th Course Number
+                    th Term
+                    th Year
+                    th(colspan=2) Instructor
                     th Grade
             tbody
                 each course in enrolledCourses
                     tr
                         each value in Object.values(course)
                             td= value
-
+        br
+        br
+        table 
+            thead
+                tr
+                    th Course number 
+                    th Instructor 
+                    th Location 
+                    th Time Offered 
+                    th Days offered 
+                    th Enrolled 
+            tbody 
+                each course in enrolledCourses 
+                    tr 
+                        each value in Object.values(course)
+                            td=value 
